@@ -1,0 +1,51 @@
+        <div class="employee-container">
+
+            <h2>Employees</h2>
+
+            <button onclick="loadEmployees()">
+                Refresh Employees
+            </button>
+
+            <table>
+
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Department</th>
+                        <th>Salary</th>
+                    </tr>
+                </thead>
+
+                <tbody id="employeeTableBody">
+                </tbody>
+
+            </table>
+
+        </div>
+
+
+        <div class="upload-container">
+
+            <h2>Upload File to S3</h2>
+
+            <form id="uploadForm">
+
+                <input type="file" id="fileInput" required>
+
+                <button type="submit">
+                    Upload to S3
+                </button>
+
+            </form>
+
+            <p id="uploadMessage"></p>
+
+        </div>
+
+    </div>
+
+    <script src="app.js"></script>
+
+</body>
+</html>

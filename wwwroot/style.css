@@ -1,0 +1,72 @@
+body {
+    font-family: Arial, sans-serif;
+    background: #f4f4f4;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    width: 80%;
+    margin: 40px auto;
+}
+
+h1 {
+    text-align: center;
+}
+
+.form-container,
+.employee-container {
+    background: white;
+    padding: 20px;
+    margin-top: 20px;
+    border-radius: 8px;
+}
+
+label {
+    display: block;
+    margin-top: 10px;
+}
+
+input {
+    width: 100%;
+    padding: 8px;
+    margin-top: 5px;
+    box-sizing: border-box;
+}
+
+button {
+    margin-top: 15px;
+    padding: 10px 15px;
+    cursor: pointer;
+}
+
+table {
+    width: 100%;
+    margin-top: 20px;
+    border-collapse: collapse;
+}
+
+th,
+td {
+    border: 1px solid #ccc;
+    padding: 10px;
+    text-align: left;
+}
+
+th {
+    background: #eee;
+}
+
+#message {
+    font-weight: bold;
+}
+.upload-container {
+    background: white;
+    padding: 20px;
+    margin-top: 20px;
+    border-radius: 8px;
+}
+
+#uploadMessage {
+    font-weight: bold;
+}

@@ -10,6 +10,8 @@ employeeForm.addEventListener("submit", async function (event) {
         salary: Number(document.getElementById("salary").value)
     };
 
+    const message = document.getElementById("message");
+
     try {
 
         const response = await fetch("/api/employees", {
@@ -24,7 +26,7 @@ employeeForm.addEventListener("submit", async function (event) {
 
         if (response.ok) {
 
-            document.getElementById("message").textContent =
+            message.textContent =
                 "Employee added successfully.";
 
             employeeForm.reset();
@@ -33,8 +35,10 @@ employeeForm.addEventListener("submit", async function (event) {
 
         } else {
 
-            document.getElementById("message").textContent =
-                "Failed to add employee.";
+            const result = await response.json().catch(() => null);
+
+            message.textContent =
+                result?.message || "Failed to add employee.";
 
         }
 
@@ -42,7 +46,7 @@ employeeForm.addEventListener("submit", async function (event) {
 
         console.error(error);
 
-        document.getElementById("message").textContent =
+        message.textContent =
             "Error connecting to server.";
 
     }
@@ -89,32 +93,47 @@ async function loadEmployees() {
     }
 
 }
+
+
 const uploadForm = document.getElementById("uploadForm");
 
 uploadForm.addEventListener("submit", async function (event) {
 
     event.preventDefault();
 
-    const fileInput = document.getElementById("fileInput");
-    const message = document.getElementById("uploadMessage");
+    const fileInput =
+        document.getElementById("fileInput");
+
+    const message =
+        document.getElementById("uploadMessage");
 
     if (fileInput.files.length === 0) {
-        message.textContent = "Please select a file.";
+
+        message.textContent =
+            "Please select a file.";
+
         return;
     }
 
     const formData = new FormData();
 
-    formData.append("file", fileInput.files[0]);
+    formData.append(
+        "file",
+        fileInput.files[0]
+    );
 
     try {
 
-        const response = await fetch("/api/files/upload", {
-            method: "POST",
-            body: formData
-        });
+        const response = await fetch(
+            "/api/files/upload",
+            {
+                method: "POST",
+                body: formData
+            }
+        );
 
-        const result = await response.json();
+        const result =
+            await response.json().catch(() => null);
 
         if (response.ok) {
 
@@ -126,7 +145,7 @@ uploadForm.addEventListener("submit", async function (event) {
         } else {
 
             message.textContent =
-                result.message || "File upload failed.";
+                result?.message || "File upload failed.";
 
         }
 

@@ -39,7 +39,6 @@ employeeForm.addEventListener("submit", async function (event) {
 
             message.textContent =
                 result?.message || "Failed to add employee.";
-
         }
 
     } catch (error) {
@@ -48,9 +47,7 @@ employeeForm.addEventListener("submit", async function (event) {
 
         message.textContent =
             "Error connecting to server.";
-
     }
-
 });
 
 
@@ -83,15 +80,12 @@ async function loadEmployees() {
             `;
 
             tableBody.appendChild(row);
-
         });
 
     } catch (error) {
 
         console.error(error);
-
     }
-
 }
 
 
@@ -146,7 +140,6 @@ uploadForm.addEventListener("submit", async function (event) {
 
             message.textContent =
                 result?.message || "File upload failed.";
-
         }
 
     } catch (error) {
@@ -155,7 +148,5 @@ uploadForm.addEventListener("submit", async function (event) {
 
         message.textContent =
             "Error connecting to server.";
-
     }
-
 });

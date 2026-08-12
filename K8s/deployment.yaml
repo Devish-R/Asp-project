@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: employee-management
+
+spec:
+  replicas: 2
+
+  selector:
+    matchLabels:
+      app: employee-management
+
+  template:
+    metadata:
+      labels:
+        app: employee-management
+
+    spec:
+      containers:
+        - name: employee-management
+
+          image: 537595753861.dkr.ecr.ap-south-2.amazonaws.com/employee-management:latest
+
+          ports:
+            - containerPort: 5000

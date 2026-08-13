@@ -34,6 +34,13 @@ jobs:
       - name: Build application
         run: dotnet build --configuration Release --no-restore
 
+      - name: Check GitHub OIDC context
+        run: 
+          echo "Repository: ${{ github.repository }}"
+          echo "Ref: ${{ github.ref }}"
+          echo "Workflow: ${{ github.workflow }}"
+          echo "Actor: ${{ github.actor }}"
+
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v5
         with:

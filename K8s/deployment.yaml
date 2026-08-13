@@ -24,3 +24,7 @@ spec:
 
           ports:
             - containerPort: 8080
+
+          envFrom:
+            - secretRef:
+                name: employee-management-secret

@@ -1,0 +1,115 @@
+name: Build and Deploy Employee Management
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  id-token: write
+  contents: read
+
+env:
+  AWS_REGION: ap-south-2
+  ECR_REPOSITORY: employee-management
+  EKS_CLUSTER: employee-management-cluster
+  K8S_NAMESPACE: default
+
+jobs:
+  build-and-deploy:
+
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Build application
+        run: dotnet build --configuration Release --no-restore
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_DEPLOY_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build Docker image
+        run: |
+          docker build \
+            -t ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ github.sha }} \
+            -t ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:latest \
+            .
+
+      - name: Push Docker image
+        run: |
+          docker push \
+            ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ github.sha }}
+
+          docker push \
+            ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:latest
+
+      - name: Configure kubectl
+        run: |
+          aws eks update-kubeconfig \
+            --region ${{ env.AWS_REGION }} \
+            --name ${{ env.EKS_CLUSTER }}
+
+      - name: Create or update Kubernetes Secret
+        run: |
+          kubectl create secret generic employee-management-secret \
+            --namespace ${{ env.K8S_NAMESPACE }} \
+            --from-literal="ConnectionStrings__DefaultConnection=${{ secrets.RDS_CONNECTION_STRING }}" \
+            --dry-run=client \
+            -o yaml | kubectl apply -f -
+
+      - name: Apply ServiceAccount
+        run: |
+          kubectl apply \
+            -f K8s/serviceaccount.yaml \
+            --namespace ${{ env.K8S_NAMESPACE }}
+
+      - name: Apply Deployment
+        run: |
+          kubectl apply \
+            -f K8s/deployment.yaml \
+            --namespace ${{ env.K8S_NAMESPACE }}
+
+      - name: Update deployment image
+        run: |
+          kubectl set image deployment/employee-management \
+            employee-management=${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ github.sha }} \
+            --namespace ${{ env.K8S_NAMESPACE }}
+
+      - name: Apply Service
+        run: |
+          kubectl apply \
+            -f K8s/service.yaml \
+            --namespace ${{ env.K8S_NAMESPACE }}
+
+      - name: Verify deployment
+        run: |
+          kubectl rollout status \
+            deployment/employee-management \
+            --namespace ${{ env.K8S_NAMESPACE }} \
+            --timeout=5m
+
+      - name: Show Kubernetes resources
+        run: |
+          kubectl get pods \
+            --namespace ${{ env.K8S_NAMESPACE }}
+
+          kubectl get service employee-management-service \
+            --namespace ${{ env.K8S_NAMESPACE }}

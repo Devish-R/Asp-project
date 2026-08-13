@@ -20,6 +20,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+
       - name: Checkout code
         uses: actions/checkout@v4
 
@@ -35,7 +36,7 @@ jobs:
         run: dotnet build --configuration Release --no-restore
 
       - name: Check GitHub OIDC context
-        run: 
+        run: |
           echo "Repository: ${{ github.repository }}"
           echo "Ref: ${{ github.ref }}"
           echo "Workflow: ${{ github.workflow }}"

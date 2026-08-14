@@ -1,3 +1,4 @@
+```yaml
 name: Build and Deploy Employee Management
 
 on:
@@ -35,22 +36,15 @@ jobs:
       - name: Build application
         run: dotnet build --configuration Release --no-restore
 
-      - name: Check GitHub OIDC context
-        run: |
-          echo "Repository: ${{ github.repository }}"
-          echo "Ref: ${{ github.ref }}"
-          echo "Workflow: ${{ github.workflow }}"
-          echo "Actor: ${{ github.actor }}"
-
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v5
         with:
           role-to-assume: ${{ secrets.AWS_DEPLOY_ROLE_ARN }}
           aws-region: ${{ env.AWS_REGION }}
-          audience: sts.amazonaws.com
 
-      - name: Verify AWS identity
-        run: aws sts get-caller-identity
+      - name: Test AWS identity
+        run: |
+          aws sts get-caller-identity
 
       - name: Login to Amazon ECR
         id: login-ecr
@@ -123,3 +117,4 @@ jobs:
 
           kubectl get service employee-management-service \
             --namespace ${{ env.K8S_NAMESPACE }}
+```

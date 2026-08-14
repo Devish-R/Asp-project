@@ -1,4 +1,3 @@
-```yaml
 name: Build and Deploy Employee Management
 
 on:
@@ -21,14 +20,13 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-
       - name: Checkout code
         uses: actions/checkout@v4
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '8.0.x'
+          dotnet-version: "8.0.x"
 
       - name: Restore dependencies
         run: dotnet restore
@@ -43,8 +41,7 @@ jobs:
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Test AWS identity
-        run: |
-          aws sts get-caller-identity
+        run: aws sts get-caller-identity
 
       - name: Login to Amazon ECR
         id: login-ecr
@@ -59,11 +56,8 @@ jobs:
 
       - name: Push Docker image
         run: |
-          docker push \
-            ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ github.sha }}
-
-          docker push \
-            ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:latest
+          docker push ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ github.sha }}
+          docker push ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:latest
 
       - name: Configure kubectl
         run: |
@@ -117,4 +111,3 @@ jobs:
 
           kubectl get service employee-management-service \
             --namespace ${{ env.K8S_NAMESPACE }}
-```
